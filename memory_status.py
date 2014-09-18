@@ -7,6 +7,7 @@ import os
 import psutil
 import json
 
+
 class MemoryIndicator:
     def __init__(self):
         # General definitions
@@ -110,6 +111,8 @@ class MemoryIndicator:
             
             with open(self.user_conf, 'w') as conf_file:
                 conf_file.write('{"show_label": false}')
+
+
 
 if __name__ == "__main__":
     memory_indicator = MemoryIndicator()
