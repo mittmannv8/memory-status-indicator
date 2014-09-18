@@ -10,6 +10,7 @@ import psutil
 class MemoryIndicator:
     def __init__(self):
         # General definitions
+        self.attention = False
         self.MEGABYTE_DIVISOR = 1024 * 1024
         
         # Set icons
@@ -61,6 +62,15 @@ class MemoryIndicator:
 
         round_percent_memory_available = int(round(memory_status.percent, -1))
         self.mem_indicator.set_icon("%d" % round_percent_memory_available)
+
+        # Attention status if memory used is above 90
+        if round_percent_memory_available >= 90 and not self.attention:
+            self.mem_indicator.set_attention_icon("100")
+            self.mem_indicator.set_status(appindicator.STATUS_ATTENTION)
+            self.attention = True
+        elif round_percent_memory_available >= 90 and self.attention:
+            self.mem_indicator.set_status(appindicator.STATUS_ACTIVE)
+            self.attention = False
 
         # Return True for gtk.timeout loop control
         return True
