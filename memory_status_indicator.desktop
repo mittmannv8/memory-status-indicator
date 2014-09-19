@@ -1,0 +1,7 @@
+[Desktop Entry]
+Type=Application
+Exec=/usr/lib/memory_status_indicator/memory_status.py
+Hidden=false
+NoDisplay=false
+X-GNOME-Autostart-enabled=true
+Name=Indicator for Memory Status

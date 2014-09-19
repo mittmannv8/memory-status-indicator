@@ -115,5 +115,26 @@ class MemoryIndicator:
 
 
 if __name__ == "__main__":
+    try:
+        with open(r"/tmp/memory_status_indicator.pid", 'r') as pid_file:
+            try:
+                pid = int(pid_file.read())
+                if not psutil.pid_exists(pid):
+                    pid_file.seek(0)
+                    pid_file.truncate()
+                    pid_file.write(str(os.getpid()))
+                    
+                    print "OK"
+                else:
+                    raise NameError("Memory Status Indicator already running")
+            except ValueError:
+                pid_file.seek(0)
+                pid_file.write(str(os.getpid()))
+                pid_file.truncate()
+                print "SEC"
+    except IOError:
+        with open(r"/tmp/memory_status_indicator.pid", 'w') as pid_file:
+            pid_file.write(str(os.getpid()))
+  
     memory_indicator = MemoryIndicator()
     gtk.main()
