@@ -1,8 +1,10 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import appindicator
-import gtk
+
+from gi.repository import AppIndicator3 as appindicator
+from gi.repository import Gtk
+from gi.repository import GLib
 import os
 import psutil
 import json
@@ -31,27 +33,27 @@ class MemoryIndicator:
         ) 
         
         # Indicator instance      
-        self.mem_indicator = appindicator.Indicator(
+        self.mem_indicator = appindicator.Indicator.new_with_path(
             "memory_indicator",
             "loading",
-            appindicator.CATEGORY_APPLICATION_STATUS,
+            appindicator.IndicatorCategory.SYSTEM_SERVICES,
             self.icon_path
         )
    
         # Define menu
-        self.menu = gtk.Menu()
+        self.menu = Gtk.Menu()
         
         #title
-        title = gtk.MenuItem("Memory Status")
-        title.set_state(gtk.STATE_INSENSITIVE)
+        title = Gtk.MenuItem("Memory Status")
+        title.set_state(Gtk.StateType.INSENSITIVE)
         self.menu.append(title)
-        self.menu.append(gtk.SeparatorMenuItem())
+        self.menu.append(Gtk.SeparatorMenuItem())
         #info
-        self.menu_info_used = gtk.MenuItem("Loading...")
-        self.menu_info_used.set_state(gtk.STATE_INSENSITIVE)
+        self.menu_info_used = Gtk.MenuItem("Loading...")
+        self.menu_info_used.set_state(Gtk.StateType.INSENSITIVE)
         self.menu.append(self.menu_info_used)
         #show label
-        self.menu_conf_show_label = gtk.CheckMenuItem("Show label")
+        self.menu_conf_show_label = Gtk.CheckMenuItem("Show label")
         if self.show_label:
             self.menu_conf_show_label.set_active(True)
         self.menu_conf_show_label.connect("toggled", self.set_show_label)
@@ -59,17 +61,17 @@ class MemoryIndicator:
         
         self.menu.show_all()
         self.mem_indicator.set_menu(self.menu)
-        self.mem_indicator.set_status(appindicator.STATUS_ACTIVE)
+        self.mem_indicator.set_status(appindicator.IndicatorStatus.ACTIVE)
         
 
         self.total_memory_available = psutil.phymem_usage().total / self.MEGABYTE_DIVISOR
         
-        # For each X seconds, the gtk loop call the get_memory_status method
-        gtk.timeout_add(2000, self.get_memory_status)
+        # For each X seconds, the GLib loop call the get_memory_status method
+        GLib.timeout_add(2000, self.get_memory_status)
         
 
     def get_memory_status(self):
-        """ Method called every x times, definied by gtk.timeout_add method
+        """ Method called every x times, definied by Gtk.timeout_add method
             This get memory information using psutil library and show in indicator.
         """
 
@@ -87,17 +89,17 @@ class MemoryIndicator:
         # Attention status if memory used is above 90
         if round_percent_memory_available >= 90 and not self.attention:
             self.mem_indicator.set_attention_icon("100")
-            self.mem_indicator.set_status(appindicator.STATUS_ATTENTION)
+            self.mem_indicator.set_status(appindicator.IndicatorStatus.ATTENTION)
             self.attention = True
         elif round_percent_memory_available >= 90 and self.attention:
-            self.mem_indicator.set_status(appindicator.STATUS_ACTIVE)
+            self.mem_indicator.set_status(appindicator.IndicatorStatus.ACTIVE)
             self.attention = False
 
         # Set label if show_label is True
         if self.show_label:
-            self.mem_indicator.set_label("%.1f%%" % memory_status.percent)
+            self.mem_indicator.set_label("%.1f%%" % memory_status.percent, "100%")
 
-        # Return True for gtk.timeout loop control
+        # Return True for Gtk.timeout loop control
         return True
 
     def set_show_label(self, widget):
@@ -107,7 +109,7 @@ class MemoryIndicator:
                 conf_file.write('{"show_label": true}')
         else:
             self.show_label = False
-            self.mem_indicator.set_label("")
+            self.mem_indicator.set_label("", "100%")
             
             with open(self.user_conf, 'w') as conf_file:
                 conf_file.write('{"show_label": false}')
@@ -134,4 +136,4 @@ if __name__ == "__main__":
             pid_file.write(str(os.getpid()))
   
     memory_indicator = MemoryIndicator()
-    gtk.main()
+    Gtk.main()
