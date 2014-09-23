@@ -1,9 +1,9 @@
 #!/bin/bash
 
 function uninstall {
-	APP_FOLDER="/usr/lib/memory_status_indicator"
-	CONF_FILE="~/.config/memory_status_indicator.conf"
-	LAUNCHER="~/.config/autostart/memory_status_indicator.desktop"
+	APP_FOLDER=/usr/lib/memory_status_indicator
+	CONF_FILE=~/.config/memory_status_indicator.conf
+	LAUNCHER=~/.config/autostart/memory_status_indicator.desktop
 	
 	if [ -e /tmp/memory_status_indicator.pid ]
 	then
@@ -20,7 +20,7 @@ function uninstall {
 	fi
 	if [ -e $LAUNCHER ]
 	then
-		rm  > /dev/null
+		rm $LAUNCHER > /dev/null
 	fi
 	
 	kill -9 $PID
