@@ -1,4 +1,4 @@
-Memory Status Indicator
+Memory Status Indicator.
 ====================
 
 Show the Memory RAM status.
